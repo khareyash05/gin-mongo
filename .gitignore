@@ -1,0 +1,5 @@
+test-app-url-shortener
+app
+coverage-reports/
+coverage.out
+coverage.xml
