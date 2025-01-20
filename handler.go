@@ -11,8 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/itchyny/base58-go"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 )
 
 type URL struct {
@@ -32,6 +34,37 @@ func Get(ctx context.Context, id string) (*URL, error) {
 	return &u, nil
 }
 
+func Upsert(ctx context.Context, u URL) error {
+	upsert := true
+	opt := &options.UpdateOptions{
+		Upsert: &upsert,
+	}
+	filter := bson.M{"_id": u.ID}
+	update := bson.D{primitive.E{Key: "$set", Value: u}}
+
+	_, err := col.UpdateOne(ctx, filter, update, opt)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func getURL(c *gin.Context) {
+	hash := c.Param("param")
+	if hash == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "please append url hash"})
+		return
+	}
+
+	u, err := Get(c.Request.Context(), hash)
+	if err != nil {
+		logger.Error("failed to find url in the database", zap.Error(err), zap.String("hash", hash))
+		c.JSON(http.StatusNotFound, gin.H{"error": "url not found"})
+		return
+	}
+	c.Redirect(http.StatusSeeOther, u.URL)
+}
+
 func putURL(c *gin.Context) {
 	var m map[string]string
 
@@ -47,7 +80,18 @@ func putURL(c *gin.Context) {
 		return
 	}
 
+	t := time.Now()
 	id := GenerateShortLink(u)
+	err = Upsert(c.Request.Context(), URL{
+		ID:      id,
+		Created: t,
+		Updated: t,
+		URL:     u,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"ts":  time.Now().UnixNano(),
 		"url": "http://localhost:8080/" + id,
