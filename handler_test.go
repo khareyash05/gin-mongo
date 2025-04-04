@@ -45,6 +45,7 @@ func TestPutURL_ValidRequest_321(t *testing.T) {
 
 // Test generated using Keploy
 
+
 func TestGetURL_ValidHash_789(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 
@@ -86,6 +87,7 @@ func TestGetURL_ValidHash_789(t *testing.T) {
 
 // Test generated using Keploy
 
+
 func TestPutURL_BadJSON_578(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -101,6 +103,7 @@ func TestPutURL_BadJSON_578(t *testing.T) {
 
 // Test generated using Keploy
 
+
 func TestPutURL_MissingURLParam_601(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -114,6 +117,7 @@ func TestPutURL_MissingURLParam_601(t *testing.T) {
 	assert.JSONEq(t, `{"error": "missing url param"}`, w.Body.String())
 }
 
+
 func TestGetURL_MissingHash_115(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -126,6 +130,7 @@ func TestGetURL_MissingHash_115(t *testing.T) {
 }
 
 // Test generated using Keploy
+
 
 func TestUpsert_DBError_991(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
@@ -153,3 +158,16 @@ func TestUpsert_DBError_991(t *testing.T) {
 }
 
 // Test generated using Keploy
+
+// Test generated using Keploy
+
+func TestNew_ValidInitialization_654(t *testing.T) {
+	host := "localhost"
+	db := "testdb"
+
+	client, err := New(host, db)
+
+	assert.NoError(t, err, "New should not return an error")
+	assert.NotNil(t, client, "MongoDB client should not be nil")
+}
+
