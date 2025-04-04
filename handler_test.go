@@ -161,6 +161,7 @@ func TestUpsert_DBError_991(t *testing.T) {
 
 // Test generated using Keploy
 
+
 func TestNew_ValidInitialization_654(t *testing.T) {
 	host := "localhost"
 	db := "testdb"
@@ -169,5 +170,22 @@ func TestNew_ValidInitialization_654(t *testing.T) {
 
 	assert.NoError(t, err, "New should not return an error")
 	assert.NotNil(t, client, "MongoDB client should not be nil")
+}
+
+// Test generated using Keploy
+
+func TestGet_NoDocumentFound_234(t *testing.T) {
+	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
+
+	mt.Run("should return error when no document is found", func(mt *mtest.T) {
+		col = mt.Coll
+		id := "non-existent-id"
+
+		mt.AddMockResponses(mtest.CreateCursorResponse(0, "testdb.testcoll", mtest.FirstBatch))
+
+		url, err := Get(context.TODO(), id)
+		require.Error(t, err)
+		assert.Nil(t, url)
+	})
 }
 
