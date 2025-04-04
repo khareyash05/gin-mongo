@@ -226,3 +226,14 @@ func TestPutURL_MissingURLField_804(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Contains(t, w.Body.String(), "missing url param")
 }
+
+// Test generated using Keploy
+func TestNew_ValidHostAndDB_904(t *testing.T) {
+	host := "localhost"
+	db := "testdb"
+
+	client, err := New(host, db)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, client)
+}
